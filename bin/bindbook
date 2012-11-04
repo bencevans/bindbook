@@ -79,23 +79,23 @@ for(var chapter in chapters) {
 
   // Chapter Header
   if(fs.existsSync(path.resolve(chapter.path, './_header.md')))
-    output = output + fs.readFileSync(path.resolve(orderedTopDir, './_header.md'));
+    output = output + "\n\n" + fs.readFileSync(path.resolve(orderedTopDir, './_header.md'));
 
   var articles = chapters[chapter].articles;
 
   for(var article in articles) {
-    output = output + fs.readFileSync(articles[article].path);
+    output = output + "\n\n" + fs.readFileSync(articles[article].path);
   }
 
   // Chapter Footer
   if(fs.existsSync(path.resolve(chapter.path, './_footer.md')))
-    output = output + fs.readFileSync(path.resolve(orderedTopDir, './_footer.md'));
+    output = output + "\n\n" + fs.readFileSync(path.resolve(orderedTopDir, './_footer.md'));
 
 }
 
 
 // Book Footer
 if(fs.existsSync('./_footer.md'))
-  output = output + fs.readFileSync('./footer.md');
+  output = output + "\n\n" + fs.readFileSync('./footer.md');
 
 console.log(output);
