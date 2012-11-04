@@ -1,0 +1,101 @@
+#!/usr/bin/env node
+
+var glob = require('glob');
+var fs = require('fs');
+var path = require('path');
+
+function isNumber(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
+function getDocName(filename) {
+  var splitFilename = filename.split('.');
+
+  for (var i = 1; i >= 0; i--) {
+    if(splitFilename > 2)
+      if(i == 1)
+        splitFilename.shift();
+      else
+        splitFilename.pop();
+    }
+
+    return splitFilename.join('.');
+  }
+
+
+// Generate Object Structure
+
+var topDir = fs.readdirSync('.');
+for(var i in topDir) {
+  if(!fs.statSync(topDir[i]).isDirectory())
+    topDir.splice(i, 1);
+}
+
+var orderedTopDir = [];
+var topDir = fs.readdirSync('.');
+for(var i in topDir) {
+  var split = topDir[i].split('.');
+  if(split[0]) {
+    if(isNumber(split[0]))
+      orderedTopDir[parseInt(split[0], 10)] = {path:topDir[i], name:split[1]};
+  }
+}
+
+
+for(var tdi in orderedTopDir) {
+
+  var files = glob.sync(orderedTopDir[tdi].path + "/{1..9}*.md");
+  var articles = [];
+  for (var i = files.length - 1; i >= 0; i--) {
+    articles.push({path: files[i], name: files[i].replace(orderedTopDir[tdi].path + '/', '').split('.')[1]});
+  }
+
+  var orderedArticles = [];
+  for(var i in articles) {
+    var splitPath = articles[i].path.split('/');
+    var filename = splitPath[splitPath.length - 1];
+    var splitFilename = filename.split('.');
+    if(splitFilename[0]) {
+      if(isNumber(splitFilename[0]))
+        orderedArticles[parseInt(splitFilename[0], 10)] = {path:articles[i].path, name:splitFilename[1]};
+    }
+  }
+  orderedTopDir[tdi].articles = orderedArticles;
+
+}
+
+var chapters = orderedTopDir;
+
+// Read/Write
+
+var output = '';
+
+// Book Header
+
+if(fs.existsSync('./_header.md'))
+  output = output + fs.readFileSync('./_header.md');
+
+for(var chapter in chapters) {
+
+  // Chapter Header
+  if(fs.existsSync(path.resolve(chapter.path, './_header.md')))
+    output = output + fs.readFileSync(path.resolve(orderedTopDir, './_header.md'));
+
+  var articles = chapters[chapter].articles;
+
+  for(var article in articles) {
+    output = output + fs.readFileSync(articles[article].path);
+  }
+
+  // Chapter Footer
+  if(fs.existsSync(path.resolve(chapter.path, './_footer.md')))
+    output = output + fs.readFileSync(path.resolve(orderedTopDir, './_footer.md'));
+
+}
+
+
+// Book Footer
+if(fs.existsSync('./_footer.md'))
+  output = output + fs.readFileSync('./footer.md');
+
+console.log(output);

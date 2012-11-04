@@ -1,0 +1,28 @@
+{
+  "name": "bindbook",
+  "version": "0.0.0",
+  "description": "Compile Chapter/Article Filestructure all into one.",
+  "main": "bin/bindbook",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/bencevans/bindbook.git"
+  },
+  "keywords": [
+    "book",
+    "bind",
+    "markdown",
+    "chapter",
+    "article",
+    "compile",
+    "docs"
+  ],
+  "bin":"bin/bindbook",
+  "author": "Ben Evans <ben@bensbit.co.uk>",
+  "license": "BSD",
+  "dependencies": {
+    "glob": "~3.1.14"
+  }
+}
